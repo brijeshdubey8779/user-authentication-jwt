@@ -37,26 +37,28 @@ function Login() {
   }, []);
 
   return (
-    <form className="p-4 max-w-md mx-auto" onSubmit={handleSubmit}>
-      <h2 className="text-2xl font-bold mb-4">Login</h2>
-      <input
-        className="block w-full mb-3 p-2 border"
-        type="email"
-        name="email"
-        placeholder="Email"
-        onChange={handleChange}
-      />
-      <input
-        className="block w-full mb-3 p-2 border"
-        type="password"
-        name="password"
-        placeholder="Password"
-        onChange={handleChange}
-      />
-      <button className="bg-blue-500 text-white px-4 py-2" type="submit">
-        Login
-      </button>
-    </form>
+    <div className="w-full bg-gray-900">
+      <form className="p-4 max-w-md mx-auto" onSubmit={handleSubmit}>
+        <h2 className="text-2xl font-bold mb-4">Login</h2>
+        <input
+          className="block w-full mb-3 p-2 border"
+          type="email"
+          name="email"
+          placeholder="Email"
+          onChange={handleChange}
+        />
+        <input
+          className="block w-full mb-3 p-2 border"
+          type="password"
+          name="password"
+          placeholder="Password"
+          onChange={handleChange}
+        />
+        <button className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2" type="submit">
+          Login
+        </button>
+      </form>
+    </div>
   );
 }
 

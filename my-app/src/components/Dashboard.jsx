@@ -17,10 +17,9 @@ function Dashboard() {
     }
 
     return (
-        <div>
+        <div className='text-center m-5'>
             <h1>dashboard : {localStorage.getItem("role")}</h1>
-            <button className='bg-blue-800 text-white hover:bg-blue-700 border-r-2' onClick={handleLogout}>Logout</button>
-
+            <button className='bg-blue-500 text-white hover:bg-blue-700 border-r-2 px-4 py-2' onClick={handleLogout}>Logout</button>
         </div>
     )
 }
