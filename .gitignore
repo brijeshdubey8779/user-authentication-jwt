@@ -1,0 +1,15 @@
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Python related
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.env
+
+# Node.js related
+node_modules/
+dist/

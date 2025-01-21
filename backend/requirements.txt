@@ -1,0 +1,6 @@
+Flask
+psycopg2-binary
+psycopg2
+Flask-Migrate
+Flask-JWT-Extended
+python-dotenv
