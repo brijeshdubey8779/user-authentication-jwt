@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
-from utils.jwt_helpers import generate_jwt
+from utils.jwt_helpers import generate_jwt, decode_jwt
 from db import get_db_cursor
 import psycopg2
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -8,6 +8,8 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 auth_bp = Blueprint('auth', __name__)
 
 from flask_jwt_extended import jwt_required, get_jwt_identity
+
+
 
 @auth_bp.route('/protected', methods=['GET'])
 @jwt_required()
@@ -71,3 +73,75 @@ def login():
 
     token = generate_jwt(user['id'], user['role'])
     return jsonify({"token": token, "role": user['role']}), 200
+
+@auth_bp.route('/admin/users', methods=['GET'])
+@jwt_required()
+def get_users():
+    token = request.headers.get('Authorization')
+    print(f"Received Token: {token}")  # Log to verify token format
+    current_user = get_jwt_identity()
+    print(f"Current User: {current_user}")
+    """Fetch all users (admin-only access)."""
+    token = request.headers.get('Authorization', '').replace('Bearer ', '')
+    decoded = decode_jwt(token)
+
+    if "error" in decoded:
+        return jsonify(decoded), 401
+
+    if decoded['role'] != 'admin':
+        return jsonify({"error": "Unauthorized"}), 403
+    current_user = get_jwt_identity()
+
+    if current_user['role'] != 'admin':
+        return jsonify({"error": "Unauthorized"}), 403
+
+    try:
+        query = "SELECT id, username, email, role FROM users;"
+        with get_db_cursor() as cursor:
+            cursor.execute(query)
+            users = cursor.fetchall()
+
+        return jsonify({
+            "users": [
+                {"id": user[0], "username": user[1], "email": user[2], "role": user[3]} for user in users
+            ]
+        }), 200
+    except Exception as e:
+        print(f"Error fetching users: {str(e)}")
+        return jsonify({"error": "Internal server error"}), 500
+
+# @auth_bp.route('/admin/users', methods=['GET'])
+# @jwt_required()
+# def get_users():
+#     current_user = get_jwt_identity()
+#     if current_user['role'] != 'admin':
+#         return jsonify({"message": "Unauthorized"}), 403
+
+#     cursor = cursor()
+#     query="""
+#     SELECT id, username, email, role FROM users
+#     """
+#     cursor.execute(query)
+#     users = cursor.fetchall()
+#     print(users)
+#     return jsonify({"users": [
+#         {"id": user[0], "username": user[1], "email": user[2], "role": user[3]} for user in users
+#     ]})
+
+
+@auth_bp.route('/admin/users/<int:user_id>', methods=['PUT'])
+@jwt_required()
+def update_user_role(user_id):
+    current_user = get_jwt_identity()
+    if current_user['role'] != 'admin':
+        return jsonify({"message": "Unauthorized"}), 403
+
+    data = request.json
+    new_role = data.get('role')
+    if new_role not in ['admin', 'doctor', 'technician']:
+        return jsonify({"message": "Invalid role"}), 400
+
+    cursor = cursor()
+    cursor.execute("UPDATE users SET role = %s WHERE id = %s", (new_role, user_id))
+    cursor.connection.commit()
+    return jsonify({"message": "Role updated successfully"})

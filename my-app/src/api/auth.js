@@ -33,3 +33,33 @@ export const getProtectedData = async () => {
         throw error.response?.data || error.message;
     }
 };
+
+
+export const getUsers = async () => {
+    const token = localStorage.getItem("token");
+    const response = await axios.get(`${API_BASE_URL}/admin/users`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    return response.data.users;
+};
+
+export const updateUserRole = async (userId, role) => {
+    const token = localStorage.getItem("token");
+    await axios.put(
+        `${API_BASE_URL}/admin/users/${userId}`,
+        { role },
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+        }
+    );
+};
+
+export const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role")
+};
