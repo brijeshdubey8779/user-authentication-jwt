@@ -25,7 +25,7 @@ export const getProtectedData = async () => {
     try {
         const response = await axios.get("http://localhost:5000/protected", {
             headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${token.toString()}`,
             },
         });
         return response.data;

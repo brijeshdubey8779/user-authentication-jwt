@@ -66,10 +66,10 @@ function AdminDashboard() {
                                 <td className="border border-gray-300 px-4 py-2">{user.id}</td>
                                 <td className="border border-gray-300 px-4 py-2">{user.username}</td>
                                 <td className="border border-gray-300 px-4 py-2">{user.email}</td>
-                                <td className="border border-gray-300 px-4 py-2">{user.role}</td>
+                                <td className="border border-gray-300 px-4 py-2">{user.role_name}</td>
                                 <td className="border border-gray-300 px-4 py-2">
                                     <select
-                                        value={user.role}
+                                        value={user.role_name}
                                         onChange={(e) => handleRoleChange(user.id, e.target.value)}
                                         className="p-2 border rounded"
                                     >
