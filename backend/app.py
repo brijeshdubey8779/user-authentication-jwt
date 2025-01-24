@@ -12,10 +12,10 @@ jwt = JWTManager(app)
 
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
 app.config['JWT_ALGORITHM'] = os.getenv('JWT_ALGORITHM')
-os.getenv('JWT_SECRET_KEY')
+app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
 # print(f"JWT_SECRET_KEY: {os.getenv('JWT_SECRET_KEY')}")
 
-
+app.jwt_blocklist = set()
 @jwt.invalid_token_loader
 def invalid_token_callback(callback):
     try:
@@ -30,4 +30,4 @@ app.register_blueprint(auth_bp, url_prefix='/auth')
 CORS(app, origins=["http://localhost:5173"])
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0", port=5000)

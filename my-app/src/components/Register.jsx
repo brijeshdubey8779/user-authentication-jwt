@@ -3,7 +3,7 @@ import { registerUser } from "../api/auth";
 import { Link, useNavigate } from "react-router-dom";
 
 function Register() {
-    // const navigate = useNavigate
+    const navigate = useNavigate
     const [formData, setFormData] = useState({
         username: "",
         email: "",

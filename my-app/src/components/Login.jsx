@@ -27,7 +27,6 @@ function Login() {
     }
   };
 
-  // redireting user to dashboard if acces token is available and if not redirecting to log in page but lets do this using useEffect 
   useEffect(() => {
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
@@ -36,6 +35,9 @@ function Login() {
     if (token) {
       if (role == "admin") {
         navigate("/admindashboard");
+      }
+      else if (role == "doctor") {
+        navigate("/doctordashboard");
       }
       else {
         navigate("/dashboard");

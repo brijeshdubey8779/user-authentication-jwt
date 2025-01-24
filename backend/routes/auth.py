@@ -1,6 +1,6 @@
-from flask import Blueprint, request, jsonify, json
+from flask import Blueprint, request, jsonify, json, current_app
 from werkzeug.security import generate_password_hash, check_password_hash
-from utils.jwt_helpers import generate_jwt
+from utils.jwt_helpers import generate_jwt, decode_jwt
 from db import get_db_cursor
 import psycopg2
 from psycopg2.extras import RealDictRow
@@ -124,36 +124,39 @@ def login():
 @jwt_required()
 def get_users():
     """Fetch all users (admin-only access)."""
-    try:
-        current_user = json.loads(get_jwt_identity())
-
-        # Checking if the user has admin privileges
-        if current_user.get('role') != 'admin':
-            return jsonify({"error": "Unauthorized"}), 403
-
-        # Query to fetch all users along with their role names
-        query = """
-        SELECT users.id, users.username, users.email, roles.role_name
-        FROM users
-        JOIN roles ON users.role_id = roles.id;
-        """
-
+    if check_token_validity()['jti'] not in current_app.jwt_blocklist:
         try:
-            with get_db_cursor() as cursor:
-                cursor.execute(query)
-                users = cursor.fetchall()
+            current_user = json.loads(get_jwt_identity())
 
-            formatted_users = [dict(user) for user in users]
-            # print(formatted_users)
+            # Checking if the user has admin privileges
+            if current_user.get('role') != 'admin':
+                return jsonify({"error": "Unauthorized"}), 403
 
-            # Respond with the formatted list of users
-            return jsonify({"users": formatted_users}), 200
-        except Exception as e:  
-            return jsonify({"error": str(e)}), 500
+            # Query to fetch all users along with their role names
+            query = """
+            SELECT users.id, users.username, users.email, roles.role_name
+            FROM users
+            JOIN roles ON users.role_id = roles.id;
+            """
 
-    except Exception as e:
-        print(f"Error fetching users: {str(e)}")
-        return jsonify({"error": "Internal server error"}), 500
+            try:
+                with get_db_cursor() as cursor:
+                    cursor.execute(query)
+                    users = cursor.fetchall()
+
+                formatted_users = [dict(user) for user in users]
+                # print(formatted_users)
+
+                # Respond with the formatted list of users
+                return jsonify({"users": formatted_users}), 200
+            except Exception as e:  
+                return jsonify({"error": str(e)}), 500
+
+        except Exception as e:
+            print(f"Error fetching users: {str(e)}")
+            return jsonify({"error": "Internal server error"}), 500
+    else:
+        return jsonify({"error": "Invalid token"}), 401
 
 
 
@@ -188,3 +191,46 @@ def update_user_role(user_id):
 
     return jsonify({"message": "Role updated successfully"})
 
+
+
+@auth_bp.route("/logout", methods=["POST"])
+def logout():
+    """Logout endpoint to revoke a token."""
+    auth_header = request.headers.get("Authorization")
+    # print(auth_header)
+    if not auth_header:
+        return jsonify({"message": "Authorization header missing"}), 401
+
+    try:
+        # Decode the token to get its jti
+        token = auth_header.split(" ")[1]
+        decoded_token = decode_jwt(token, current_app.config["JWT_SECRET_KEY"])
+        jti = decoded_token["jti"]
+
+        current_app.jwt_blocklist.add(jti)
+        # print(current_app.jwt_blocklist)
+        return jsonify({"message": "Logged out successfully"}), 200
+
+    except Exception as e:
+        return jsonify({"message": str(e)}), 401
+    
+    
+    
+def check_token_validity():
+    """
+    Function to check if the token in the request is valid.
+    Returns the decoded token if valid, else raises an error.
+    """
+    auth_header = request.headers.get("Authorization")
+    # print(auth_header)
+    if not auth_header:
+        return jsonify({"message": "Authorization header missing"}), 401
+
+    token = auth_header.split(" ")[1]
+
+    try:
+        decoded_token = decode_jwt(token, current_app.config["JWT_SECRET_KEY"])
+        # print(decoded_token)
+        return decoded_token
+    except ValueError as e:
+        return jsonify({"message": str(e)}), 401

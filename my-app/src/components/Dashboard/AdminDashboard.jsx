@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getUsers, updateUserRole, logout } from "../../api/auth"; // API calls to Flask
+import { getUsers, updateUserRole, logout } from "../../api/auth";
 
 function AdminDashboard() {
     const [users, setUsers] = useState([]);
@@ -36,7 +36,7 @@ function AdminDashboard() {
     // Logout admin
     const handleLogout = () => {
         logout();
-        window.location.href = "/login"; // Redirect to login page
+        window.location.href = "/login";
     };
 
     return (

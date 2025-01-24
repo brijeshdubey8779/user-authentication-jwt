@@ -59,7 +59,29 @@ export const updateUserRole = async (userId, role) => {
     );
 };
 
-export const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("role")
+
+export const logout = async () => {
+    try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            throw new Error("No token found");
+        }
+
+        const response = await axios.post(
+            `${API_BASE_URL}/logout`,
+            {},
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");
+
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || error.message;
+    }
 };
