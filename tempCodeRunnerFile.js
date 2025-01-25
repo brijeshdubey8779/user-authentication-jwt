@@ -1,0 +1,1 @@
+db.command("collMod", "Patient_details", validator=pd_vailidator);

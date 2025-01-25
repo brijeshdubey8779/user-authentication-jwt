@@ -4,16 +4,20 @@ from routes.auth import auth_bp
 from config import Config
 from flask_cors import CORS
 import os
+from pymongo import MongoClient
 
+MONGODB_URI = os.getenv('MONGODB_URI')
 app = Flask(__name__)
 app.config.from_object(Config)
 
 jwt = JWTManager(app)
+client = MongoClient(MONGODB_URI)
+
 
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
 app.config['JWT_ALGORITHM'] = os.getenv('JWT_ALGORITHM')
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
-# print(f"JWT_SECRET_KEY: {os.getenv('JWT_SECRET_KEY')}")
+
 
 app.jwt_blocklist = set()
 @jwt.invalid_token_loader
