@@ -8,8 +8,8 @@ pd_validator = {
             "required": ["_id", "patient_id", "name", "age", "clinical_details"],
             "properties": {
                 "_id": {
-                "bsonType": "string",
-                "description": "Unique identifier for the patient"
+                  "bsonType": "objectId",
+                  "description": "Unique identifier for the patient"
                 },
                 "patient_id": {
                 "bsonType": "string",
@@ -32,7 +32,7 @@ pd_validator = {
         }
 
 try:
-    db.command("Patient_details", validator=pd_validator)
+    db.command("callMod", "Patient_details", validator=pd_validator)
 except Exception as e:
     print(f"Error: {e}")
 # db.create_collection("Patient_details", pd_validator)

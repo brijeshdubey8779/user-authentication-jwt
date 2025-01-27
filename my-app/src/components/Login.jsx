@@ -39,6 +39,9 @@ function Login() {
       else if (role == "doctor") {
         navigate("/doctordashboard");
       }
+      else if (role == "technician") {
+        navigate("/techniciandashboard");
+      }
       else {
         navigate("/dashboard");
       }

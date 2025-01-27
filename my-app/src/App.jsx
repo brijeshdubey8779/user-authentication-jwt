@@ -8,6 +8,9 @@ import DoctorDashboard from "./components/Dashboard/DoctorDashboard";
 import PatientInformation from "./components/PatientInfo/PatientInformation";
 import ReportsPage from "./components/PatientInfo/ReportsPage";
 import EditPatientDetails from "./components/PatientInfo/EditPatientDetails";
+import MultiStepForm from "./components/Technician/MultiStepForm";
+import TechnicianDashboard from "./components/Dashboard/TechnicianDashboard";
+import Reports from "./components/Technician/Reports";
 
 function App() {
   return (
@@ -25,6 +28,9 @@ function App() {
         <Route path="/doctordashboard/patient-info" element={<PatientInformation />} />
         <Route path="/doctordashboard/reports" element={<ReportsPage />} />
         <Route path="/doctordashboard/edit-patient" element={<EditPatientDetails />} />
+        <Route path="/techniciandashboard" element={<TechnicianDashboard />} />
+        <Route path="/reports" element={<Reports />} />
+        <Route path="/technician" element={<MultiStepForm />} />
       </Routes>
     </Router>
   );
