@@ -85,3 +85,25 @@ export const logout = async () => {
         throw error.response?.data || error.message;
     }
 };
+
+
+// export const genrateReports= async (data)=> {
+//     const token = localStorage.getItem("token");
+//     const response = await axios.get(`${API_BASE_URL}/add_new_report`, {
+//         headers: {
+//             Authorization: `Bearer ${token}`,
+//         },
+//     });
+//     return response.data.reports;
+// }
+
+// A asyncronus fucntion that submits the data comming from multistep form to /add_new_report
+export const submitReport = async (data) => {
+    const token = localStorage.getItem("token");
+    const response = await axios.post(`${API_BASE_URL}/add_new_report`, data, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    return response.data;
+};

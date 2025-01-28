@@ -55,16 +55,23 @@ except Exception as e:
 gross_vailidator = {
     "$jsonSchema": {
       "bsonType": "object",
-      "required": ["_id", "diagnosis", "doctor_ids", "gross"],
+      "required": ["_id", "mobile_no" "diagnosis", "doctor_ids", "gross"],
       "properties": {
         "_id": {
           "bsonType": "string",
           "description": "Reference to the patient's unique ID"
         },
+        "mobile_no": {
+          "bsonType": "string",
+          "description": "Mobile number of the patient"
+        },
         "diagnosis": {
           "bsonType": "string",
           "description": "Medical diagnosis"
         },
+        "accession_details":{
+          
+          },
         "doctor_ids": {
           "bsonType": "array",
           "items": {

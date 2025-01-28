@@ -1,5 +1,6 @@
 import React from "react";
 import { useForm, FormProvider, useFormContext } from "react-hook-form";
+import { submitReport } from "../../api/auth";
 
 // Step 1: Patient Information
 const PatientInfo = () => {
@@ -138,8 +139,20 @@ const MultiStepForm = () => {
     const methods = useForm();
     const [step, setStep] = React.useState(1);
 
+    // submitting the form to the api which is defined in auth.js in a function submitReport
+    const handleSubmit = async (data) => {
+        const response = await submitReport(data);
+        if (response.status === 200) {
+            console.log("Report submitted successfully");
+        } else {
+            console.log("Error submitting report");
+        }
+    };
+
+
     const onSubmit = (data) => {
         console.log("Form Data:", data);
+        handleSubmit(data)
         alert("Form submitted successfully!");
     };
 

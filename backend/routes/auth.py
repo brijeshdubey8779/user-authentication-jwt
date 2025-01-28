@@ -234,3 +234,15 @@ def check_token_validity():
         return decoded_token
     except ValueError as e:
         return jsonify({"message": str(e)}), 401
+    
+    
+@auth_bp.route('/add_new_report', methods=['POST'])
+@jwt_required()
+def add_new_report():
+    try:
+        data = request.json
+        # print(data)
+        return jsonify({"message": "Report added successfully"}, data), 200
+    except Exception as e:
+        print(e)
+        return jsonify({"message": str(e)}), 400
