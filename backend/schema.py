@@ -108,3 +108,45 @@ gross_vailidator = {
       }
     }
   }
+
+
+
+{
+  $jsonSchema: {
+    bsonType: 'object',
+    required: [
+      '_id',
+      'patient_id',
+      'name',
+      'age',
+      'clinical_details',
+      'report_id'
+    ],
+    properties: {
+      _id: {
+        bsonType: 'objectId',
+        description: 'Unique identifier for the patient'
+      },
+      patient_id: {
+        bsonType: 'string',
+        description: 'Human-readable patient ID'
+      },
+      name: {
+        bsonType: 'string',
+        description: 'Name of the patient'
+      },
+      age: {
+        bsonType: 'int',
+        description: 'Age of the patient'
+      },
+      clinical_details: {
+        bsonType: 'string',
+        description: 'Basic clinical details'
+      },
+      report_id: {
+        bsonType: 'object',
+        description: 'Relationship to report document'
+      }
+    }
+  }
+}

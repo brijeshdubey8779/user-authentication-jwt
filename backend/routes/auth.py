@@ -5,6 +5,10 @@ from db import get_db_cursor
 import psycopg2
 from psycopg2.extras import RealDictRow
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from pymongo import MongoClient
+# import pymongo
+# client = MongoClient(current_app.config("MONGOURI"))
+
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -62,8 +66,6 @@ def register():
             # role_id = role_data[0]['id'] 
             print(role_id)
 
-            # Insert the new user with the role_id
-            # Insert the new user with the role_id
             query = """
             INSERT INTO users (username, email, password_hash, role_id)
             VALUES (%s, %s, %s, %s)
@@ -81,7 +83,6 @@ def register():
                     user_id = cursor.fetchone()['id']
                     print("user_id")
                     try:
-                        # Commit the transaction using the connection, not the cursor
                         cursor.connection.commit()
                     except Exception as e:
                         print(e)
@@ -128,11 +129,9 @@ def get_users():
         try:
             current_user = json.loads(get_jwt_identity())
 
-            # Checking if the user has admin privileges
             if current_user.get('role') != 'admin':
                 return jsonify({"error": "Unauthorized"}), 403
 
-            # Query to fetch all users along with their role names
             query = """
             SELECT users.id, users.username, users.email, roles.role_name
             FROM users
@@ -235,14 +234,34 @@ def check_token_validity():
     except ValueError as e:
         return jsonify({"message": str(e)}), 401
     
-    
+
+
 @auth_bp.route('/add_new_report', methods=['POST'])
 @jwt_required()
 def add_new_report():
-    try:
-        data = request.json
-        # print(data)
-        return jsonify({"message": "Report added successfully"}, data), 200
-    except Exception as e:
-        print(e)
-        return jsonify({"message": str(e)}), 400
+    if check_token_validity()['jti'] not in current_app.jwt_blocklist:
+        try:
+            current_user = json.loads(get_jwt_identity())
+            if (current_user.get('role') != 'technician' and current_user.get('role') != 'doctor') or current_user.get('role') == 'admin':
+                return jsonify({"error": "Unauthorized"}), 403
+            
+            try:
+                client = MongoClient(current_app.config["MONGODB_URI"], serverSelectionTimeoutMS=5000) 
+            except Exception as e:
+                return jsonify({"message": str(e)}), 500
+
+            db = client.medprime  
+            collection = db["test"] 
+            data = request.json 
+            try:
+                result = collection.insert_one(data)
+                if result.inserted_id:
+                    return jsonify({"message": "Report added successfully", "id": str(result.inserted_id)}), 200
+                else:
+                    return jsonify({"message": "Failed to insert report"}), 400
+            except Exception as e:
+                return jsonify({"message": str(e)}), 400
+
+        except Exception as e:
+            print(e)
+            return jsonify({"message": str(e)}), 400

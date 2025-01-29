@@ -156,12 +156,13 @@ const MultiStepForm = () => {
         alert("Form submitted successfully!");
     };
 
-    const nextStep = () => {
-        methods.trigger().then((isValid) => {
-            if (isValid) setStep((prev) => prev + 1);
-        });
-    };
+    // const nextStep = () => {
+    //     methods.trigger().then((isValid) => {
+    //         if (isValid) setStep((prev) => prev + 1);
+    //     });
+    // };
 
+    const nextStep = () => setStep((prev) => prev + 1);
     const prevStep = () => setStep((prev) => prev - 1);
 
     return (
@@ -177,15 +178,17 @@ const MultiStepForm = () => {
                             <button
                                 type="button"
                                 onClick={prevStep}
+                                disabled={step === 1}
                                 className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
                             >
                                 Previous
                             </button>
                         )}
-                        {step < 3 ? (
+                        {step === 2 ? (
                             <button
                                 type="button"
                                 onClick={nextStep}
+                                disabled={step === 3}
                                 className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                             >
                                 Next
@@ -193,6 +196,8 @@ const MultiStepForm = () => {
                         ) : (
                             <button
                                 type="submit"
+                                onClick={methods.handleSubmit(onSubmit)}
+                                disabled={step < 3}
                                 className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
                             >
                                 Submit
